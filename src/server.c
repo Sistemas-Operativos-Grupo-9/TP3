@@ -12,7 +12,7 @@
 #include <netinet/in.h>
 #include <netinet/ip.h>
 
-void wait_for_connection()
+int wait_for_connection()
 {
   int sock;
   /*
@@ -73,8 +73,13 @@ void wait_for_connection()
     perror("accept");
     exit(1);
   }
+
+  // Configuro stdin para que se conecten al socket del cliente y cierro el socket del host
+  dup2(newSock, 0);
+  shutdown(sock, SHUT_RDWR);
+
   printf("Connection accepted.\n");
-  return;
+  return newSock;
 }
 
 void run_shell_command(const char *command, int length,
@@ -87,7 +92,9 @@ void run_shell_command(const char *command, int length,
 
 int main(void)
 {
-  wait_for_connection();
+
+  int newSock = wait_for_connection();
+  printf("%d\n", newSock);
   for (int i = 0; i < questions_count; i++)
   {
     Question *question = &questions[i];
@@ -127,6 +134,7 @@ int main(void)
       sleep(1);
     }
   }
-  printf("TERMINASTE!\n");
-  return 0;
+  printf("Felicitaciones, finalizaron el juego. Ahora deberán implementar el servidor que se comporte como el servidor provisto!\n");
+  shutdown(newSock, SHUT_RDWR);
+  exit(0);
 }
