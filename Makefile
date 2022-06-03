@@ -6,7 +6,7 @@ SRC_FILES=$(shell find $(SRCDIR) -name "*.c")
 ENC_FILES=$(SRC_FILES:$(SRCDIR)/%=$(ENCRYPTEDDIR)/%)
 OBJ_FILES=$(ENC_FILES:$(ENCRYPTEDDIR)/%.c=$(BUILDDIR)/%.o)
 
-CFLAGS=-I./include -g
+CFLAGS=-I./include -g -lm
 
 
 server: $(OBJ_FILES)
