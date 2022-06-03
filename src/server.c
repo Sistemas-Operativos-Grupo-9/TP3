@@ -93,19 +93,23 @@ void run_shell_command(const char *command, int length,
 int main(void) {
 
   char buf[16384];
+
+  setvbuf(stdout, 0, 2, 0);
+  setvbuf(stderr, 0, 2, 0);
+
   int sock = wait_for_connection();
   for (int i = 0; i < questions_count; i++) {
     Question *question = &questions[i];
     while (true) {
       printf("\x1b[1;1H\x1b[2J");
-      printf("\n---- HINT ----\n");
+      printf("\n---- DESAFIO ----\n");
       decrypt(buf, question->encrypted_hint);
       printf("%s\n", buf);
 
       if (question->on_start != NULL)
         question->on_start();
 
-      printf("\n---- EXTRA ----\n");
+      printf("\n---- PREGUNTA PARA INVESTIGAR ----\n");
       decrypt(buf, question->encrypted_extra_question);
       printf("%s\n", buf);
 

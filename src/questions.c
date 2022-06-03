@@ -1,52 +1,127 @@
 #include "questions.h"
 #include "encrypt.h"
+#include <math.h>
+#include <signal.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
+
+char *retry_text = ENCRYPTED("ENTER para reintentar.");
 
 void secondQuestion() { printf("THIS STRING IS SPECIFIC TO QUESTION 2!"); }
 
-double uniform_random() {
-	return (double) rand() / RAND_MAX;
-}
+double uniform_random() { return (double)rand() / RAND_MAX; }
 
 double normal_random() {
-	double U = uniform_random();
-	double V = uniform_random();
-	double n = sqrt(-2 * log(U)) * cos(M_PI_2 * V);
-	return n;
+  double U = uniform_random();
+  double V = uniform_random();
+  double n = sqrt(-2 * log(U)) * cos(2 * M_PI * V);
+  return n;
 }
 
 void normalQuestion() {
-	for (int i = 0; i < 1000; i++) {
-		double r = normal_random();
-		printf("%.6f ", r);
-	}
+  for (int i = 0; i < 1000; i++) {
+    double r = normal_random();
+    printf("%.6f ", r);
+  }
 }
 
 void quine() {
-	char buf[128];
-    decrypt(buf, ENCRYPTED("gcc quine.c -o quine"));
-    int ret = system(buf);
-    if (ret != 0) {
-        decrypt(buf, ENCRYPTED("ENTER para reintentar."));
-        printf("\n%s\n", buf);
-        return;
-    }
-    decrypt(buf, ENCRYPTED("Genial!, ya lograron meter un programa en quine.c, veamos si hace lo que corresponde."));
+  char buf[128];
+  decrypt(buf, ENCRYPTED("gcc quine.c -o quine"));
+  int ret = system(buf);
+  if (ret != 0) {
+    decrypt(buf, retry_text);
+    printf("\n%s\n", buf);
+    return;
+  }
+  decrypt(buf, ENCRYPTED("Genial!, ya lograron meter un programa en quine.c, "
+                         "veamos si hace lo que corresponde."));
+  puts(buf);
+  decrypt(buf, ENCRYPTED("./quine | diff - quine.c"));
+  ret = system(buf);
+  if (ret != 0) {
+    decrypt(buf, ENCRYPTED("diff encontró diferencias."));
+    printf("\n%s\n", buf);
+    decrypt(buf, retry_text);
     puts(buf);
-    decrypt(buf, ENCRYPTED("./quine | diff - quine.c"));
-    ret = system(buf);
-    if (ret != 0) {
-        decrypt(buf, ENCRYPTED("diff encontró diferencias."));
-        printf("\n%s\n", buf);
-        decrypt(buf, ENCRYPTED("ENTER para reintentar."));
-        puts(buf);
-        return;
-    }
-    decrypt(buf, ENCRYPTED("La respuesta es chin_chu_lan_cha"));
+    return;
+  }
+  decrypt(buf, ENCRYPTED("La respuesta es chin_chu_lan_cha"));
+  puts(buf);
+}
+
+void bad_write() {
+  char buf[128];
+  decrypt(buf, ENCRYPTED("La respuesta es fk3wfLCm3QvS\n"));
+  int w = write(13, buf, strlen(buf));
+  if (w == -1)
+    perror("write");
+  return;
+}
+
+void gdbme() {
+  char buf[256];
+  int pid = getpid();
+  if (pid != 0x12345678) {
+    decrypt(buf, retry_text);
     puts(buf);
+    return;
+  }
+  decrypt(buf, ENCRYPTED("La respuesta es gdb_rules"));
+  puts(buf);
+  return;
+}
+
+void kill_gdb() {
+  char buf[128];
+  char tracer[128];
+
+  decrypt(tracer, ENCRYPTED("grep Tracer /proc/%d/status | cut -f 2"));
+
+  int pid = getpid();
+  sprintf(buf, tracer, pid);
+  FILE *out = popen(buf, "r");
+  if (out != 0) {
+    fgets(buf, sizeof(buf), out);
+    long int gdb_pid = strtol(buf, 0, 10);
+    if (gdb_pid != 0) {
+      kill(gdb_pid, 9);
+    }
+  }
+}
+
+void filter() {
+  char buf[256];
+  kill_gdb();
+  decrypt(buf, ENCRYPTED("La respuesta es K5n2UFfpFMUN\n"));
+  time_t seed = time(NULL);
+  srand(seed);
+  int i = 0;
+  while (true) {
+    while (rand() % 100 < 15 && buf[i] != '\0') {
+      fputc((int32_t)buf[i++], stdout);
+    }
+    if (buf[i] == '\0') {
+      return;
+    }
+    int r = rand();
+    fputc((char)r - (char)(r / 95) * 95 + ' ', stderr);
+  }
+}
+
+void question8() {
+  char buf[128];
+
+  kill_gdb();
+  printf("\x1b[30;40m");
+  decrypt(buf, ENCRYPTED("La respuesta es BUmyYq5XxXGt"));
+  puts(buf);
+  puts("\x1b[0m");
 }
 
 Question questions[] = {
@@ -62,7 +137,7 @@ Question questions[] = {
             "esperar la respuesta.\nAdemás, deberán implementar otro programa "
             "para comunicarse conmigo.\nDeberán estar atentos a los easter "
             "eggs.\nPara verificar que sus respuestas tienen el formato "
-            "correcto respondan a este desafío con la palabra 'entendido'"),
+            "correcto respondan a este desafío con la palabra 'entendido\\n'"),
         .encrypted_extra_question =
             ENCRYPTED("¿Cómo descubrieron el protocolo, la dirección y el "
                       "puerto para conectarse?"),
@@ -86,12 +161,12 @@ Question questions[] = {
         .on_start = NULL,
     },
     {
-        .encrypted_hint = ENCRYPTED("EBADF...\n\nwrite: Bad file descriptor"),
+        .encrypted_hint = ENCRYPTED("EBADF...\n\n"),
         .encrypted_extra_question = ENCRYPTED(
             "¿Qué útil abstracción es utilizada para comunicarse con sockets? "
             "¿se puede utilizar read(2) y write(2) para operar?"),
         .md5_answer = MD5SUM("fk3wfLCm3QvS"),
-        .on_start = NULL,
+        .on_start = bad_write,
     },
     {
         .encrypted_hint = ENCRYPTED("respuesta = strings:277"),
@@ -111,23 +186,20 @@ Question questions[] = {
         .on_start = NULL,
     },
     {
-        .encrypted_hint = ENCRYPTED(
-            "Filter error\n\ni(LDLjaH1 "
-            "prt0dB_eJF+1sx@}pu=e/#stRaQBrw'@/B.>-W.f whd4Jb.$#zJ4tg "
-            "pS6eKTsI45 -K5OCn}NXC3;~U{p~2>g&T&op3 {UPFJfXptgGbFM4UkcBm.UUN"),
+        .encrypted_hint = ENCRYPTED("Filter error\n\n"),
         .encrypted_extra_question =
             ENCRYPTED("¿Cómo se puede implementar un servidor que atienda "
                       "muchas conexiones sin usar procesos ni threads?"),
         .md5_answer = MD5SUM("K5n2UFfpFMUN"),
-        .on_start = NULL,
+        .on_start = filter,
     },
     {
-        .encrypted_hint = ENCRYPTED("¿?\n\nLa respuesta es BUmyYq5XxXGt"),
+        .encrypted_hint = ENCRYPTED("¿?\n\n"),
         .encrypted_extra_question =
             ENCRYPTED("¿Qué aplicaciones se pueden utilizar para ver el "
                       "tráfico por la red?"),
         .md5_answer = MD5SUM("BUmyYq5XxXGt"),
-        .on_start = NULL,
+        .on_start = question8,
     },
     {
         .encrypted_hint = ENCRYPTED("Latexme\n\nSi\n\\mathrm{d}y = "
@@ -150,7 +222,7 @@ Question questions[] = {
         .encrypted_hint = ENCRYPTED("b gdbme y encontrá el valor mágico"),
         .encrypted_extra_question = ENCRYPTED("¿Qué es un RFC?"),
         .md5_answer = MD5SUM("gdb_rules"),
-        .on_start = NULL,
+        .on_start = gdbme,
     },
     {
         .encrypted_hint = ENCRYPTED("Me conoces\n\n"),
