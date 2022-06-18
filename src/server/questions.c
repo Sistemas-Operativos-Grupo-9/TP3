@@ -174,7 +174,7 @@ Question questions[] = {
         .on_start = bad_write,
     },
     {
-        .encrypted_hint = ENCRYPTED("respuesta = strings:193"),
+        .encrypted_hint = ENCRYPTED("respuesta = strings:222"),
         .encrypted_extra_question =
             ENCRYPTED("¿Cómo garantiza TCP que los paquetes llegan en orden y "
                       "no se pierden?"),
