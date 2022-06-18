@@ -12,8 +12,6 @@
 
 char *retry_text = ENCRYPTED("ENTER para reintentar.");
 
-void secondQuestion() { printf("THIS STRING IS SPECIFIC TO QUESTION 2!"); }
-
 double uniform_random() { return (double)rand() / RAND_MAX; }
 
 double normal_random() {
@@ -150,7 +148,7 @@ Question questions[] = {
             ENCRYPTED("¿Qué diferencias hay entre TCP y UDP y en qué casos "
                       "conviene usar cada uno?"),
         .md5_answer = MD5SUM("itba"),
-        .on_start = secondQuestion,
+        .on_start = NULL,
     },
     {
         .encrypted_hint = ENCRYPTED("https://ibb.co/tc0Hb6w"),
