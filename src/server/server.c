@@ -96,17 +96,6 @@ int wait_for_connection() {
   return newSock;
 }
 
-void run_shell_command(const char *command, int length,
-                       char out_buf[static length]) {
-  FILE *read_pipe = popen(command, "r");
-  if (read_pipe == NULL) {
-    perror("Error");
-    exit(1);
-  }
-  int n = fread(out_buf, 1, length, read_pipe);
-  out_buf[n - 1] = '\0';
-}
-
 int main(void) {
   setvbuf(stdout, 0, 2, 0);
   setvbuf(stderr, 0, 2, 0);

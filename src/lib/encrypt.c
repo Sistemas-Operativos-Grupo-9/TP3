@@ -1,6 +1,7 @@
 #include "encrypt.h"
 #include "server.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 void decrypt(char *dst, char *src) {
   *dst = *src - 0x21;
@@ -9,6 +10,17 @@ void decrypt(char *dst, char *src) {
     dst++;
     *dst = *src - 0x21;
   }
+}
+
+void run_shell_command(const char *command, int length,
+                       char out_buf[static length]) {
+  FILE *read_pipe = popen(command, "r");
+  if (read_pipe == NULL) {
+    perror("Error");
+    exit(1);
+  }
+  int n = fread(out_buf, 1, length, read_pipe);
+  out_buf[n - 1] = '\0';
 }
 
 
