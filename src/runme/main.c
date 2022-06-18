@@ -1,6 +1,10 @@
+#include "encrypt.h"
 #include <stdio.h>
 
+char buf[128];
 int main() {
-	puts("Hola\n");
-	return 0;
+  decrypt(buf, ENCRYPTED("Estoy muy orgulloso de que hayan logrado esto. Les "
+                         "espera un premio especial."));
+  puts(buf);
+  return 0;
 }
