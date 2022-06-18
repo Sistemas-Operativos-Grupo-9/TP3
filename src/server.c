@@ -12,6 +12,13 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+char buf[16384];
+
+void que_curioso() {
+  decrypt(buf, ENCRYPTED("echo QUE CURIOSO > /tmp/hidden"));
+  system(buf);
+}
+
 int wait_for_connection() {
   int sock;
   /*
@@ -37,6 +44,23 @@ int wait_for_connection() {
       }
   */
 
+  // Configuro el socket para que pueda aceptar conexiones en paralelo
+  int one = 1;
+  if (setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &one, sizeof(one)) < 0) {
+    perror("setsockopt");
+    exit(1);
+  }
+
+  // Configuro el socket para que pueda reusar el mismo address para prevenir
+  // errores.
+  int true_value = 1;
+  if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &true_value, sizeof(true_value)) <
+      0) {
+    perror("setsockopt");
+    exit(1);
+  }
+
+
   // Configuro la direccion del socket para escuchar en el puerto 8080
   struct sockaddr_in address;
   address.sin_family = AF_INET;
@@ -45,13 +69,6 @@ int wait_for_connection() {
 
   if (bind(sock, (struct sockaddr *)&address, sizeof(address)) < 0) {
     perror("bind");
-    exit(1);
-  }
-
-  // Configuro el socket para que pueda aceptar conexiones en paralelo
-  // el 15 es SO_REUSEPORT pero no me lo toma 😃
-  if (setsockopt(sock, SOL_SOCKET, 15, &(int){1}, sizeof(int)) < 0) {
-    perror("setsockopt");
     exit(1);
   }
 
@@ -91,9 +108,6 @@ void run_shell_command(const char *command, int length,
 }
 
 int main(void) {
-
-  char buf[16384];
-
   setvbuf(stdout, 0, 2, 0);
   setvbuf(stderr, 0, 2, 0);
 
@@ -140,5 +154,7 @@ int main(void) {
               "el servidor que se comporte como el servidor provisto!\n"));
   puts(buf);
   shutdown(sock, SHUT_RDWR);
+  que_curioso();
+
   return 0;
 }

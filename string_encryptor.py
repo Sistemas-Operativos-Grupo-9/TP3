@@ -6,15 +6,27 @@ from sys import argv, stderr
 
 
 def replace_escaped(s, m) -> str:
-    for l, ch in m.items():
-        s = s.replace('\\'+l, ch)
-    return s
+    escape = False
+    new_str = ''
+    for l in s:
+        if not escape and l == '\\':
+            escape = True
+            continue
+        if escape:
+            if l in m.keys():
+                new_str += m[l]
+            else:
+                raise Exception("Unknown escape sequence: \\{}.".format(l))
+        else:
+            new_str += l
+        escape = False
+    return new_str
 
 
 def parse_c_string(s: str, add_null=True) -> str:
     return replace_escaped(s, {
-        'n': '\n',
         '\\': '\\',
+        'n': '\n',
         'b': '\b',
         't': '\t',
     }) + ('\0' if add_null else '')
