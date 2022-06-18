@@ -1,5 +1,6 @@
 #include "questions.h"
 #include "encrypt.h"
+#include "valgrind.h"
 #include <math.h>
 #include <signal.h>
 #include <stdbool.h>
@@ -9,7 +10,10 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#include "valgrind.h"
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 char *retry_text = ENCRYPTED("ENTER para reintentar.");
 
@@ -76,6 +80,8 @@ void gdbme() {
   return;
 }
 
+void too_easy() {}
+
 void kill_gdb() {
   char buf[128];
   char tracer[128];
@@ -103,7 +109,7 @@ void filter() {
   int i = 0;
   while (true) {
     while (rand() % 100 < 15 && buf[i] != '\0') {
-      fputc((int32_t)buf[i++], stdout);
+      fputc(buf[i++], stdout);
     }
     if (buf[i] == '\0') {
       return;

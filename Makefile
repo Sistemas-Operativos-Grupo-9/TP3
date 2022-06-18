@@ -6,7 +6,7 @@ SRC_FILES=$(shell find $(SRCDIR) -name "*.c")
 ENC_FILES=$(SRC_FILES:$(SRCDIR)/%=$(ENCRYPTEDDIR)/%)
 OBJ_FILES=$(ENC_FILES:$(ENCRYPTEDDIR)/%.c=$(BUILDDIR)/%.o)
 
-CFLAGS=-I./include -g -lm
+CFLAGS=-D_POSIX_C_SOURCE=200809L -I./include -std=c99 -g -lm
 
 server: $(BUILDDIR)/server_unstripped
 	./strip.sh $< $@

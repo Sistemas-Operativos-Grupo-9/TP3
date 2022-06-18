@@ -44,7 +44,7 @@ def md5(s: str) -> str:
 
 
 input_file = argv[1]
-with open(input_file, 'r') as file:
+with open(input_file, 'r', encoding='utf-8') as file:
     content = file.read()
 
 def encrypt_match(match):
