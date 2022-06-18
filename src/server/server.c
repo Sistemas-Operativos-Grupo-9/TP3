@@ -128,6 +128,8 @@ int main(void) {
       MD5 answered_md5;
       md5sum(line, answered_md5);
 
+	  free(line);
+
       if (strcmp(answered_md5, question->md5_answer) == 0) {
         printf("CORRECTO!\n");
         break;

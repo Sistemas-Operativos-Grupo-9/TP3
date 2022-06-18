@@ -80,7 +80,7 @@ void gdbme() {
   return;
 }
 
-void too_easy() {}
+char too_easy = 1;
 
 void kill_gdb() {
   char buf[128];
@@ -123,7 +123,7 @@ void question8() {
   char buf[128];
 
   kill_gdb();
-  printf("\x1b[30;40m");
+  puts("\x1b[30;40m");
   decrypt(buf, ENCRYPTED("La respuesta es BUmyYq5XxXGt"));
   puts(buf);
   puts("\x1b[0m");
@@ -174,7 +174,7 @@ Question questions[] = {
         .on_start = bad_write,
     },
     {
-        .encrypted_hint = ENCRYPTED("respuesta = strings:277"),
+        .encrypted_hint = ENCRYPTED("respuesta = strings:193"),
         .encrypted_extra_question =
             ENCRYPTED("¿Cómo garantiza TCP que los paquetes llegan en orden y "
                       "no se pierden?"),
@@ -183,7 +183,7 @@ Question questions[] = {
     },
     {
         .encrypted_hint =
-            ENCRYPTED(".data .bss .comment ? .shstrtab .symtab .strtab"),
+            ENCRYPTED(".data .bss .comment ?"),
         .encrypted_extra_question =
             ENCRYPTED("Un servidor suele crear un nuevo proceso o thread para "
                       "atender las conexiones entrantes. ¿Qué conviene más?"),

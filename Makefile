@@ -15,13 +15,14 @@ OBJ_SERVER_FILES=$(ENC_SERVER_FILES:$(ENCRYPTEDDIR)/%.c=$(BUILDDIR)/%.o)
 CFLAGS=-D_POSIX_C_SOURCE=200809L -I./include -std=c99 -g -lm
 
 server: $(BUILDDIR)/server_without_runme $(BUILDDIR)/runme_bin
-	objcopy --add-section .RUNME=$(BUILDDIR)/runme_bin --set-section-flags .RUNME=noload,readonly $< $@
+	objcopy --add-section .RUN_ME=$(BUILDDIR)/runme_bin --set-section-flags .RUN_ME=noload,readonly $< $@
 
 $(BUILDDIR)/server_without_runme: $(BUILDDIR)/server_unstripped
 	./strip.sh $< $@
 
 $(BUILDDIR)/runme_bin: $(OBJ_RUNME_FILES) $(OBJ_LIB_FILES)
 	gcc $(CFLAGS) -o $@ $^
+	strip $@
 
 $(BUILDDIR)/server_unstripped: $(OBJ_SERVER_FILES) $(OBJ_LIB_FILES)
 	gcc $(CFLAGS) -o $@ $^
