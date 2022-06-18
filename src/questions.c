@@ -9,6 +9,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include "valgrind.h"
 
 char *retry_text = ENCRYPTED("ENTER para reintentar.");
 
@@ -156,7 +157,7 @@ Question questions[] = {
             ENCRYPTED("¿El puerto que usaron para conectarse al server es el "
                       "mismo que usan para mandar las respuestas? ¿Por qué?"),
         .md5_answer = MD5SUM("M4GFKZ289aku"),
-        .on_start = NULL,
+        .on_start = __L,
     },
     {
         .encrypted_hint = ENCRYPTED("EBADF...\n\n"),

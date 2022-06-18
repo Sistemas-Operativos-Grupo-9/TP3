@@ -8,8 +8,10 @@ OBJ_FILES=$(ENC_FILES:$(ENCRYPTEDDIR)/%.c=$(BUILDDIR)/%.o)
 
 CFLAGS=-I./include -g -lm
 
+server: $(BUILDDIR)/server_unstripped
+	./strip.sh $< $@
 
-server: $(OBJ_FILES)
+$(BUILDDIR)/server_unstripped: $(OBJ_FILES)
 	gcc $(CFLAGS) -o $@ $^
 
 $(BUILDDIR)/%.o: $(ENCRYPTEDDIR)/%.c
