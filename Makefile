@@ -44,7 +44,7 @@ $(ENCRYPTEDDIR)/%.c: $(SRCDIR)/%.c
 	./string_encryptor.py $^ > $@
 
 clean:
-	rm -rf $(BUILDDIR) $(ENCRYPTEDDIR) server
+	rm -rf $(BUILDDIR) $(ENCRYPTEDDIR) server interactor
 
 rebuild: clean all
 
