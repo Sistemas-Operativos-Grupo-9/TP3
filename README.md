@@ -1,5 +1,13 @@
 # Sistemas Operativos TP3
 
+## Preprocesador
+
+Para encriptar strings y calcular md5, decidimos crear un preprocesador que se ejecute previo a la etapa de compilación.
+Decidimos hacerlo en python para un manejo de strings mas facil.
+Este script lo llamamos `string_encryptor.sh` y se ejecuta automaticamente al hacer make.
+El funcionamiento es simple, busca en el codigo los strings encerrados en `ENCRIPTED("")` o `MD5SUM("")` y los reemplaza por el string encriptado o el hash md5 del string respectivamente.
+Como la deteccion de estas sentencias esta hecha con una expresion regular, no es perfecta, pero detecta los casos mas comunes.
+
 ## Easter Eggs encontrados (y como reproducirlos)
 
 Para poder reproducirlos se debe usar el programa `server` provisto por la catedra, ya que algunos valores (como posiciones dentro del binario) pueden cambiar.
