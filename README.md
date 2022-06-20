@@ -1,12 +1,26 @@
 # Sistemas Operativos TP3
 
+## Estructura del Proyecto
+Todo el codigo se encuentra en la carpeta src.
+Dentro de src se pueden ver las siguientes carpetas:
+* `server`: Contiene el codigo principal del server. Ya sean las preguntas, respuestas y el loop principal de preguntas.
+* `runme`: Un programa simple que solo imprime por pantalla un string. Forma parte de un easter egg.
+* `lib`: Contiene codigo que se utiliza desde `server` y desde `runme`. Principalmente desencriptar strings.
+* `interactor`: Codigo para interactuar con el `server` mediante sockets.
+
+## Build
+Correr `./dcom make` para buildear el server y el interactor.
+
+Los ejecutables se crean en el root del proyecto, y se llaman `./server` e `./interactor`.
+
 ## Preprocesador
 
 Para encriptar strings y calcular md5, decidimos crear un preprocesador que se ejecute previo a la etapa de compilación.
 Decidimos hacerlo en python para un manejo de strings mas facil.
 Este script lo llamamos `string_encryptor.sh` y se ejecuta automaticamente al hacer make.
-El funcionamiento es simple, busca en el codigo los strings encerrados en `ENCRIPTED("")` o `MD5SUM("")` y los reemplaza por el string encriptado o el hash md5 del string respectivamente.
-Como la deteccion de estas sentencias esta hecha con una expresion regular, no es perfecta, pero detecta los casos mas comunes.
+
+El funcionamiento es simple; busca en el codigo los strings encerrados en `ENCRIPTED("")` o `MD5SUM("")` y los reemplaza por el string encriptado o el hash md5 del string, respectivamente.
+Como la deteccion de estas sentencias esta hecha con una expresion regular, no es perfecta, pero detecta los casos mas comunes y es suficiente para este programa.
 
 ## Easter Eggs encontrados (y como reproducirlos)
 
